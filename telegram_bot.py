@@ -1,34 +1,44 @@
 import asyncio
-from aiogram import Bot, Dispatcher
-from tokens import TG_TOKEN as TOKEN
-from tokens import CHAT_ID
+import discord_bot
+from aiogram import Bot, Dispatcher, types
+from tokens import TG_TOKEN, TG_CHAT_ID
 
-
-bot = Bot(token=TOKEN)
 dp = Dispatcher()
-
-async def send_message(message: str):
-    await bot.send_message(chat_id=CHAT_ID, text=message, parse_mode="Markdown")
+bot = Bot(token=TG_TOKEN)
 
 
-async def send_message_advanced(message: str):
-    await bot.send_message(chat_id=CHAT_ID, text=message, parse_mode="HTML")
-
-
-async def send_attachment(link: str):
-    await bot.send_message(chat_id=CHAT_ID, text=link, parse_mode="Markdown")
-
-
-"""
 @dp.message()
-async def send_welcome(message: types.Message):
-    if message.text == "/send":
-        await send_message_to_group(-1002231109277, "Hello World!")
-        await message.answer("Сообщение отправлено в группу.")
-"""
+async def message_handler(message: types.Message):
+    print(message.from_user.username, message.text)
+    # await discord_bot.send_message("%s: %s" % (message.from_user.username, message.text))
+
+
+def escape_text(text):
+    escape_characters = ('_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!')
+
+    for char in escape_characters:
+        text = text.replace(char, f"\\{char}")
+    
+    return text
+
+
+async def send_message(author, message):
+    print("[INFO] %s: %s" % (author, message))
+    await bot.send_message(chat_id=TG_CHAT_ID, text="*%s:* %s" % (author, message), parse_mode="Markdown")
+
+
+async def send_answer(quote_author, quote_text, author, message):
+    quote_author, quote_text, author, message = escape_text(quote_author), escape_text(quote_text), escape_text(author), escape_text(message)
+    await bot.send_message(chat_id=TG_CHAT_ID, text=f">*{quote_author}:* {quote_text}\n*{author}:* {message}", disable_web_page_preview=True, parse_mode="MarkdownV2")
+
+
+async def send_attachment(author, file_name, link):
+    print("[INFO] %s: %s (attachment)" % (author, file_name))
+    await bot.send_message(chat_id=TG_CHAT_ID, text="*%s:* [%s](%s)" % (author, file_name, link), parse_mode="Markdown")
 
 
 async def main():
+    print("[INFO] Bot started to work")
     await dp.start_polling(bot)
 
 
