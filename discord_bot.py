@@ -1,3 +1,4 @@
+import asyncio
 import discord
 import telegram_bot
 from tokens import DS_TOKEN, DS_CHAT_ID
@@ -9,8 +10,8 @@ bot = discord.Client(intents=intents)
 
 
 @bot.event
-async def on_ready():    
-    print('[LOGS] %s started to work' % bot.user.name)
+async def on_ready():
+    print(f"[LOGS] Discord Bot started to work")
 
 
 @bot.event
@@ -34,19 +35,19 @@ async def on_message(message):
                 await telegram_bot.send_answer(quote_msg.author.display_name, quote_msg.attachments[0].filename, message.author.display_name, message.content)
 
 
-async def send_message(message):
-    await bot.wait_until_ready()
-
+async def send_message(author, message):
     channel = bot.get_channel(DS_CHAT_ID)
+    
     if channel:
-        await channel.send(message)
+        await channel.send(f"**{author}:** {message}")
     else:
-        print(f"ERROR: Channel with ID {DS_CHAT_ID} not found")
+        print(f"[ERROR] Channel ID: {DS_CHAT_ID} wasn't found")
 
 
-def run_discord_bot():
-    bot.run(DS_TOKEN)
+async def main():
+    await bot.start(DS_TOKEN)
+    await bot.wait_until_ready()
 
 
 if __name__ == "__main__":
-    run_discord_bot()
+    asyncio.run(main())
