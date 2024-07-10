@@ -9,9 +9,13 @@ intents.message_content = True
 bot = discord.Client(intents=intents)
 
 
+# TODO
+# message-check decorator
+
+
 @bot.event
 async def on_ready():
-    print(f"[LOGS] Discord Bot started to work")
+    print(f"[DISCORD] Discord Bot started to work")
 
 
 @bot.event
@@ -35,13 +39,18 @@ async def on_message(message):
                 await telegram_bot.send_answer(quote_msg.author.display_name, quote_msg.attachments[0].filename, message.author.display_name, message.content)
 
 
-async def send_message(author, message):
+async def send_message(author: str, message: str) -> None:
+    channel = bot.get_channel(DS_CHAT_ID)
+
+    print(f"[TELEGRAM2DISCORD] {author}: {message}")
+    await channel.send(f"**{author}:** {message}")
+
+
+async def send_answer(quote_author: str, quote_text: str, reply_author: str, reply_text: str) -> None:
     channel = bot.get_channel(DS_CHAT_ID)
     
-    if channel:
-        await channel.send(f"**{author}:** {message}")
-    else:
-        print(f"[ERROR] Channel ID: {DS_CHAT_ID} wasn't found")
+    print(f"[TELEGRAM2DISCORD] > {quote_author}: {quote_text}\n*{reply_author}: {reply_text}")
+    await channel.send(f"> **{quote_author}:** {quote_text}\n**{reply_author}:** {reply_text}")
 
 
 async def main():
