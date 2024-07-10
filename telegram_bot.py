@@ -9,12 +9,13 @@ bot = Bot(token=TG_TOKEN)
 
 @dp.message()
 async def message_handler(message: types.Message):
-    print(message.from_user.username, message.text)
-    # await discord_bot.send_message("%s: %s" % (message.from_user.username, message.text))
+    if message and message.chat.id == TG_CHAT_ID:
+        await discord_bot.send_message(message.from_user.username, message.text)
+        print(message.from_user.username, message.text)
 
 
 def escape_text(text):
-    escape_characters = ('_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!')
+    escape_characters = ("_", "*", "[", "]", "(", ")", "~", "`", ">", "#", "+", "-", "=", "|", "{", "}", ".", "!")
 
     for char in escape_characters:
         text = text.replace(char, f"\\{char}")
@@ -23,8 +24,8 @@ def escape_text(text):
 
 
 async def send_message(author, message):
-    print("[INFO] %s: %s" % (author, message))
-    await bot.send_message(chat_id=TG_CHAT_ID, text="*%s:* %s" % (author, message), parse_mode="Markdown")
+    print(f"[INFO] {author}: {message}")
+    await bot.send_message(chat_id=TG_CHAT_ID, text=f"*{author}:* {message}", parse_mode="Markdown")
 
 
 async def send_answer(quote_author, quote_text, author, message):
@@ -33,12 +34,12 @@ async def send_answer(quote_author, quote_text, author, message):
 
 
 async def send_attachment(author, file_name, link):
-    print("[INFO] %s: %s (attachment)" % (author, file_name))
-    await bot.send_message(chat_id=TG_CHAT_ID, text="*%s:* [%s](%s)" % (author, file_name, link), parse_mode="Markdown")
+    print(f"[INFO] {author}: {file_name} (attachment)")
+    await bot.send_message(chat_id=TG_CHAT_ID, text=f"*{author}:* [{file_name}]({link})", parse_mode="Markdown")
 
 
 async def main():
-    print("[INFO] Bot started to work")
+    print("[INFO] Telegram Bot started to work")
     await dp.start_polling(bot)
 
 
