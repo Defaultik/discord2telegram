@@ -7,11 +7,17 @@ dp = Dispatcher()
 bot = Bot(token=TG_TOKEN)
 
 
+async def on_startup():
+    print("[TELEGRAM] Telegram Bot started to work")
+
+
 @dp.message()
 async def message_handler(message: types.Message):
-    if message and message.chat.id == TG_CHAT_ID:
-        await discord_bot.send_message(message.from_user.username, message.text)
-        print(message.from_user.username, message.text)
+    if message.chat.id == TG_CHAT_ID:
+        if message.reply_to_message:
+            await discord_bot.send_answer(message.reply_to_message.from_user.username, message.reply_to_message.text, message.from_user.username, message.text)
+        else:
+            await discord_bot.send_message(message.from_user.username, message.text)
 
 
 def escape_text(text):
@@ -23,23 +29,24 @@ def escape_text(text):
     return text
 
 
-async def send_message(author, message):
-    print(f"[INFO] {author}: {message}")
+async def send_message(author: str, message: str) -> None:
+    print(f"[DISCORD2TELEGRAM] {author}: {message}")
     await bot.send_message(chat_id=TG_CHAT_ID, text=f"*{author}:* {message}", parse_mode="Markdown")
 
 
-async def send_answer(quote_author, quote_text, author, message):
-    quote_author, quote_text, author, message = escape_text(quote_author), escape_text(quote_text), escape_text(author), escape_text(message)
-    await bot.send_message(chat_id=TG_CHAT_ID, text=f">*{quote_author}:* {quote_text}\n*{author}:* {message}", disable_web_page_preview=True, parse_mode="MarkdownV2")
+async def send_answer(quote_author: str, quote_text: str, reply_author: str, reply_text: str) -> None:
+    print(f"[DISCORD2TELEGRAM] >{quote_author}: {quote_text}\n*{reply_author}: {reply_text}")
+    quote_author, quote_text, reply_author, reply_text = escape_text(quote_author), escape_text(quote_text), escape_text(reply_author), escape_text(reply_text)
+    await bot.send_message(chat_id=TG_CHAT_ID, text=f">*{quote_author}:* {quote_text}\n*{reply_author}:* {reply_text}", disable_web_page_preview=True, parse_mode="MarkdownV2")
 
 
-async def send_attachment(author, file_name, link):
-    print(f"[INFO] {author}: {file_name} (attachment)")
+async def send_attachment(author: str, file_name: str, link: str) -> None:
+    print(f"[DISCORD2TELEGRAM] {author}: {file_name} (attachment)")
     await bot.send_message(chat_id=TG_CHAT_ID, text=f"*{author}:* [{file_name}]({link})", parse_mode="Markdown")
 
 
 async def main():
-    print("[INFO] Telegram Bot started to work")
+    dp.startup.register(on_startup)
     await dp.start_polling(bot)
 
 
