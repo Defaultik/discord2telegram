@@ -1,14 +1,16 @@
+import logging
 import discord
 import telegram_bot
+from main import setup_logging
 from tokens import DS_TOKEN, DS_CHAT_ID
+
+setup_logging()
+logger = logging.getLogger('Discord')
 
 intents = discord.Intents.default()
 intents.message_content = True
 
 bot = discord.Client(intents=intents)
-
-
-# TODO: message-check decorator
 
 
 # Discord message handler
@@ -48,24 +50,19 @@ async def on_message(message):
 
 
 # Send message to Discord methods
-async def send_message(author: str, message: str) -> None:
-    print(f"[TELEGRAM2DISCORD] {author}: {message}")
+# TODO: message-check decorator
+async def send_message(author: str, text: str) -> None:
+    logging.info(f"[MESSAGE2DISCORD] {author}: {text}")
 
     channel = bot.get_channel(DS_CHAT_ID)
-    await channel.send(f"**{author}:** {message}")
+    await channel.send(f"**{author}:** {text}")
 
 
-async def send_answer(quote_author: str, quote_text: str, reply_author: str, reply_text: str) -> None:    
-    print(f"[TELEGRAM2DISCORD] > {quote_author}: {quote_text}\n*{reply_author}: {reply_text}")
+async def send_answer(quote_author: str, quote_text: str, reply_author: str, reply_text: str) -> None:
+    logging.info(f"[MESSAGE2DISCORD] > {quote_author}: {quote_text}\n*{reply_author}: {reply_text}")
 
     channel = bot.get_channel(DS_CHAT_ID)
     await channel.send(f"> **{quote_author}:** {quote_text}\n**{reply_author}:** {reply_text}")
-
-
-# Bot startup function
-@bot.event
-async def on_ready():
-    print(f"[INFO] Discord Bot started to work")
 
 
 async def main():
