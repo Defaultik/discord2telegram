@@ -49,19 +49,17 @@ async def on_message(message):
                 )
 
 
-# Send message to Discord methods
-# TODO: message-check decorator
 async def send_message(author: str, text: str) -> None:
-    logging.info(f"[MESSAGE2DISCORD] {author}: {text}")
-
     channel = bot.get_channel(DS_CHAT_ID)
+
+    logging.info(f"[MESSAGE2DISCORD] {author}: {text}")
     await channel.send(f"**{author}:** {text}")
 
 
 async def send_answer(quote_author: str, quote_text: str, reply_author: str, reply_text: str) -> None:
-    logging.info(f"[MESSAGE2DISCORD] > {quote_author}: {quote_text}\n*{reply_author}: {reply_text}")
-
     channel = bot.get_channel(DS_CHAT_ID)
+
+    logging.info(f"[MESSAGE2DISCORD] > {quote_author}: {quote_text}\n*{reply_author}: {reply_text}")
     await channel.send(f"> **{quote_author}:** {quote_text}\n**{reply_author}:** {reply_text}")
 
 
