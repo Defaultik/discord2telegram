@@ -15,7 +15,6 @@ bot = Bot(token=TG_TOKEN)
 @dp.message()
 async def message_handler(message: types.Message):
     if (message.chat.type == "supergroup" or message.chat.type == "group") and message.chat.id == TG_CHAT_ID:
-        print(message.chat.type)
         if message.reply_to_message:
             await discord_bot.send_answer(
                 quote_author=message.reply_to_message.from_user.username, 
@@ -23,7 +22,7 @@ async def message_handler(message: types.Message):
                 reply_author=message.from_user.username, 
                 reply_text=message.text
             )
-        else:
+        elif message.text:
             await discord_bot.send_message(
                 author=message.from_user.username, 
                 text=message.text
