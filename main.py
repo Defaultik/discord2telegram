@@ -16,8 +16,8 @@ def main():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
-    loop.create_task(discord_bot.main())
-    loop.create_task(telegram_bot.main())
+    loop.create_task(discord_bot.run())
+    loop.create_task(telegram_bot.run())
 
     loop.run_forever()
 
