@@ -9,6 +9,7 @@ logger = logging.getLogger('Discord')
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.voice_states = True
 
 bot = discord.Client(intents=intents)
 
@@ -49,6 +50,39 @@ async def on_message(message):
                 )
 
 
+@bot.event
+async def on_voice_state_update(member, before, after) -> None:
+    before.channel = (before.channel.name).replace("┊", "|")
+    after.channel = (after.channel.name).replace("┊", "")
+
+    if before.channel is None and after.channel is not None:
+        print(f"{member} подключился к каналу {after.channel}")
+        await telegram_bot.send_message_advanced(
+            text=f"*{member}* подключился к голосовому каналу *{after.channel}*"
+        )
+    elif before.channel is not None and after.channel is None:
+        print(f"{member} отключился от канала {before.channel}")
+        await telegram_bot.send_message_advanced(
+            text=f"*{member}* отключился от голосового канала *{before.channel}*"
+        )
+    elif before.channel is not None and after.channel is not None:
+        print(f'{member} переместился из канала {before.channel} в {after.channel}')
+        await telegram_bot.send_message_advanced(
+            text=f"*{member}* переместился из канала *{before.channel}* в *{after.channel}*"
+        )
+
+    """if before.channel is None and after.channel is not None:
+        print(f"{member} подключился к голосовому каналу {after.channel}")
+        await telegram_bot.send_message_advanced(
+                    text=f"*{member}* подключился к голосовому каналу *{after.channel}*"
+        )
+    elif before.channel is not None and after.channel is None:
+        print(f"{member} отключился от голосового канала {before.channel}")
+        await telegram_bot.send_message_advanced(
+                    text=f"*{member}* отключился от голосового канала *{before.channel}*"
+        )"""
+
+
 async def send_message(author: str, text: str) -> None:
     channel = bot.get_channel(DS_CHAT_ID)
 
@@ -63,6 +97,6 @@ async def send_answer(quote_author: str, quote_text: str, reply_author: str, rep
     await channel.send(f"> **{quote_author}:** {quote_text}\n**{reply_author}:** {reply_text}")
 
 
-async def main():
+async def run():
     await bot.start(DS_TOKEN)
     await bot.wait_until_ready()
