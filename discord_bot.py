@@ -52,35 +52,25 @@ async def on_message(message):
 
 @bot.event
 async def on_voice_state_update(member, before, after) -> None:
-    before.channel = (before.channel.name).replace("┊", "|")
-    after.channel = (after.channel.name).replace("┊", "")
+    for channel in (before.channel, after.channel):
+        if channel:
+            channel.name = channel.name.replace("┊", "")
 
-    if before.channel is None and after.channel is not None:
-        print(f"{member} подключился к каналу {after.channel}")
+    if not before.channel and after.channel:
+        print(f"{member} подключился к каналу {after.channel.name}")
         await telegram_bot.send_message_advanced(
-            text=f"*{member}* подключился к голосовому каналу *{after.channel}*"
+            text=f"*{member}* подключился к голосовому каналу *__{after.channel.name}__*"
         )
-    elif before.channel is not None and after.channel is None:
-        print(f"{member} отключился от канала {before.channel}")
+    elif before.channel and not after.channel:
+        print(f"{member} отключился от канала {before.channel.name}")
         await telegram_bot.send_message_advanced(
-            text=f"*{member}* отключился от голосового канала *{before.channel}*"
+            text=f"*{member}* отключился от голосового канала *__{before.channel.name}__*"
         )
-    elif before.channel is not None and after.channel is not None:
-        print(f'{member} переместился из канала {before.channel} в {after.channel}')
+    elif before.channel and after.channel:
+        print(f'{member} переместился из канала {before.channel.name} в {after.channel.name}')
         await telegram_bot.send_message_advanced(
-            text=f"*{member}* переместился из канала *{before.channel}* в *{after.channel}*"
+            text=f"*{member}* переместился из канала *__{before.channel.name}__* в *__{after.channel.name}__*"
         )
-
-    """if before.channel is None and after.channel is not None:
-        print(f"{member} подключился к голосовому каналу {after.channel}")
-        await telegram_bot.send_message_advanced(
-                    text=f"*{member}* подключился к голосовому каналу *{after.channel}*"
-        )
-    elif before.channel is not None and after.channel is None:
-        print(f"{member} отключился от голосового канала {before.channel}")
-        await telegram_bot.send_message_advanced(
-                    text=f"*{member}* отключился от голосового канала *{before.channel}*"
-        )"""
 
 
 async def send_message(author: str, text: str) -> None:
