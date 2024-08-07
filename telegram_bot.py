@@ -58,7 +58,7 @@ async def send_message_advanced(text: str) -> None:
     await bot.send_message(
         chat_id=TG_CHAT_ID,
         text=f"{text}",
-        parse_mode="Markdown"
+        parse_mode="MarkdownV2"
     )
 
 
