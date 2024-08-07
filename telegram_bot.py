@@ -34,7 +34,7 @@ async def message_handler(message: types.Message):
         
 
 # String escaping to avoid problems in message sending
-def escape_text(text):
+def escape_text(text: str) -> str:
     escape_characters = ("_", "*", "[", "]", "(", ")", "~", "`", ">", "#", "+", "-", "=", "|", "{", "}", ".", "!")
 
     for char in escape_characters:
@@ -49,6 +49,15 @@ async def send_message(author: str, message: str) -> None:
     await bot.send_message(
         chat_id=TG_CHAT_ID,
         text=f"*{author}:* {message}",
+        parse_mode="Markdown"
+    )
+
+
+async def send_message_advanced(text: str) -> None:
+    logging.info(f"[MESSAGE2TELEGRAM] {text}")
+    await bot.send_message(
+        chat_id=TG_CHAT_ID,
+        text=f"{text}",
         parse_mode="Markdown"
     )
 
@@ -74,5 +83,5 @@ async def send_attachment(author: str, file_name: str, link: str) -> None:
     )
 
 
-async def main():
+async def run():
     await dp.start_polling(bot)
